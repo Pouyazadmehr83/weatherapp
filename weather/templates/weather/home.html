@@ -8,12 +8,27 @@
     <h2>جستجوی آب‌وهوا</h2>
 
     <form method="get">
-        <input type="text" name="city" placeholder="نام شهر">
+        <input type="text" name="city" value="{{ query }}" placeholder="نام شهر">
         <button type="submit">نمایش آب‌وهوا</button>
     </form>
 
-    {% if city %}
-        <p>شهر وارد شده: <b>{{ city }}</b></p>
+    {% if error %}
+        <p style="color:red;">{{ error }}</p>
+    {% endif %}
+
+    {% if weather %}
+        <div>
+            <h3>وضعیت فعلی برای {{ weather.city }}{% if weather.country %}، {{ weather.country }}{% endif %}</h3>
+            <ul>
+                <li>دما: {{ weather.temperature }}°C</li>
+                <li>سرعت باد: {{ weather.windspeed }} کیلومتر بر ساعت</li>
+                <li>جهت باد: {{ weather.winddirection }} درجه</li>
+                <li>کد وضعیت جوی: {{ weather.weathercode }}</li>
+                <li>به‌روزرسانی: {{ weather.time }}</li>
+            </ul>
+        </div>
+    {% elif query %}
+        <p>نتیجه‌ای برای "{{ query }}" یافت نشد.</p>
     {% endif %}
 
 </body>
