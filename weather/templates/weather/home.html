@@ -1,35 +1,227 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Weather App</title>
+    <meta charset="UTF-8">
+    <title>SkyPulse | Weather at a Glance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            color-scheme: light dark;
+            --bg: radial-gradient(circle at top, #70a1ff 0%, #3742fa 40%, #1b1d3c 100%);
+            --surface: rgba(255, 255, 255, 0.12);
+            --text: #ffffff;
+            --muted: rgba(255, 255, 255, 0.7);
+            --accent: #ffc048;
+            --border: rgba(255, 255, 255, 0.2);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 24px;
+        }
+
+        .wrapper {
+            width: min(420px, 100%);
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 32px;
+            backdrop-filter: blur(18px);
+            box-shadow: 0 25px 60px rgba(11, 14, 45, 0.45);
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin: 0 0 8px;
+        }
+
+        p.lead {
+            margin: 0 0 24px;
+            color: var(--muted);
+        }
+
+        form {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            border: 1px solid transparent;
+            border-radius: 16px;
+            padding: 14px 18px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.18);
+            color: var(--text);
+            transition: border 0.2s ease, background 0.2s ease;
+        }
+
+        input[type="text"]::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.28);
+        }
+
+        button {
+            border: none;
+            border-radius: 16px;
+            padding: 14px 20px;
+            background: var(--accent);
+            color: #1b1d3c;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 25px rgba(255, 192, 72, 0.35);
+        }
+
+        .error {
+            background: rgba(255, 107, 129, 0.2);
+            border: 1px solid rgba(255, 107, 129, 0.6);
+            color: #ffe6ea;
+            margin: 0 0 18px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            font-size: 0.95rem;
+        }
+
+        .weather-card {
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            padding: 20px;
+            background: rgba(8, 12, 28, 0.65);
+            margin-top: 12px;
+        }
+
+        .weather-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+
+        .temperature {
+            font-size: 3.4rem;
+            font-weight: 600;
+            margin: 8px 0 12px;
+        }
+
+        .details {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .pill {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 12px;
+        }
+
+        .pill span {
+            display: block;
+        }
+
+        .label {
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-bottom: 3px;
+        }
+
+        .value {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .empty-state {
+            border: 1px dashed var(--border);
+            border-radius: 20px;
+            padding: 18px;
+            text-align: center;
+            color: var(--muted);
+        }
+    </style>
 </head>
 <body>
+    <main class="wrapper">
+        <section class="card">
+            <h1>SkyPulse</h1>
+            <p class="lead">Search any city and instantly view the current conditions.</p>
 
-    <h2>جستجوی آب‌وهوا</h2>
+            <form method="get" autocomplete="off">
+                <input type="text" name="city" value="{{ query }}" placeholder="Try London, Dubai, New York...">
+                <button type="submit">Check Weather</button>
+            </form>
 
-    <form method="get">
-        <input type="text" name="city" value="{{ query }}" placeholder="نام شهر">
-        <button type="submit">نمایش آب‌وهوا</button>
-    </form>
+            {% if error %}
+                <div class="error">{{ error }}</div>
+            {% endif %}
 
-    {% if error %}
-        <p style="color:red;">{{ error }}</p>
-    {% endif %}
-
-    {% if weather %}
-        <div>
-            <h3>وضعیت فعلی برای {{ weather.city }}{% if weather.country %}، {{ weather.country }}{% endif %}</h3>
-            <ul>
-                <li>دما: {{ weather.temperature }}°C</li>
-                <li>سرعت باد: {{ weather.windspeed }} کیلومتر بر ساعت</li>
-                <li>جهت باد: {{ weather.winddirection }} درجه</li>
-                <li>کد وضعیت جوی: {{ weather.weathercode }}</li>
-                <li>به‌روزرسانی: {{ weather.time }}</li>
-            </ul>
-        </div>
-    {% elif query %}
-        <p>نتیجه‌ای برای "{{ query }}" یافت نشد.</p>
-    {% endif %}
-
+            {% if weather %}
+                <div class="weather-card">
+                    <div class="weather-meta">
+                        <div>
+                            <strong>{{ weather.city }}</strong>
+                            {% if weather.country %}<span>({{ weather.country }})</span>{% endif %}
+                        </div>
+                        <span>{{ weather.time }}</span>
+                    </div>
+                    <div class="temperature">{{ weather.temperature }}°C</div>
+                    <div class="details">
+                        <div class="pill">
+                            <span class="label">Wind Speed</span>
+                            <span class="value">{{ weather.windspeed }} km/h</span>
+                        </div>
+                        <div class="pill">
+                            <span class="label">Wind Direction</span>
+                            <span class="value">{{ weather.winddirection }}°</span>
+                        </div>
+                        <div class="pill">
+                            <span class="label">Weather Code</span>
+                            <span class="value">{{ weather.weathercode }}</span>
+                        </div>
+                        <div class="pill">
+                            <span class="label">Updated</span>
+                            <span class="value">{{ weather.time }}</span>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    {% if query %}
+                        No results found for “{{ query }}”. Try a different spelling or nearby city.
+                    {% else %}
+                        Enter a city to discover its current weather snapshot.
+                    {% endif %}
+                </div>
+            {% endif %}
+        </section>
+    </main>
 </body>
 </html>

@@ -13,21 +13,21 @@ def _fetch_json(url):
 def _get_weather_for_city(city):
     """Resolve a city name to coordinates and fetch current weather data."""
     if not city:
-        return None, "لطفاً نام شهر را وارد کنید."
+        return None, "Please enter a city name."
 
     geo_url = (
         "https://geocoding-api.open-meteo.com/v1/search?"
-        + parse.urlencode({"name": city, "count": 1, "language": "fa", "format": "json"})
+        + parse.urlencode({"name": city, "count": 1, "language": "en", "format": "json"})
     )
 
     try:
         geo_data = _fetch_json(geo_url)
     except Exception:
-        return None, "امکان برقراری ارتباط با سرویس مکان‌یاب وجود ندارد."
+        return None, "Unable to reach the geocoding service."
 
     results = geo_data.get("results") or []
     if not results:
-        return None, "شهری با این نام پیدا نشد."
+        return None, "No city was found with that name."
 
     location = results[0]
     latitude = location.get("latitude")
@@ -48,11 +48,11 @@ def _get_weather_for_city(city):
     try:
         weather_data = _fetch_json(weather_url)
     except Exception:
-        return None, "امکان دریافت وضعیت آب‌وهوا وجود ندارد."
+        return None, "Unable to fetch the current weather."
 
     current = weather_data.get("current_weather")
     if not current:
-        return None, "اطلاعات فعلی آب‌وهوا در دسترس نیست."
+        return None, "Current weather information is unavailable."
 
     return (
         {
