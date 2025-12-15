@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather App</title>
+</head>
+<body>
+
+    <h2>جستجوی آب‌وهوا</h2>
+
+    <form method="get">
+        <input type="text" name="city" placeholder="نام شهر">
+        <button type="submit">نمایش آب‌وهوا</button>
+    </form>
+
+    {% if city %}
+        <p>شهر وارد شده: <b>{{ city }}</b></p>
+    {% endif %}
+
+</body>
+</html>
